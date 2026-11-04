@@ -1202,10 +1202,11 @@ def summarize_match(r, person_name, hs_key, gemini_key,
     rep_first  = person_name.split()[0]
     file_base  = f"{date_str}_{rep_first}_{safe_company}"
 
+    saved_ids = {}
     def save_file(folder_id, suffix, body, header):
         filename = f"{file_base}-{suffix}.txt"
         body_out = header + "\n" + "="*60 + "\n\n" + body
-        drive_write_text(drive_service, filename, body_out, folder_id)
+        saved_ids[suffix] = drive_write_text(drive_service, filename, body_out, folder_id)
         return filename
 
     # Save raw transcript to Transcripts/RepName/
@@ -1213,6 +1214,8 @@ def summarize_match(r, person_name, hs_key, gemini_key,
               f"RAW TRANSCRIPT\nSalesperson: {person_name}\n"
               f"Customer: {customer_name} | Company: {company_name}\n"
               f"Date: {date_str} {time_str}")
+    transcript_link = (f"https://drive.google.com/file/d/{saved_ids['Transcript']}/view"
+                       if saved_ids.get("Transcript") else "")
 
     # Build context for all prompts
     deal_context = ""
@@ -1274,7 +1277,8 @@ def summarize_match(r, person_name, hs_key, gemini_key,
     save_file(aud_person_folder, f"Audit_G{grade_str}", mgmt_summary,
               f"SALES AUDIT — GRADE {grade_str}/5\n"
               f"Salesperson: {person_name} | Customer: {customer_name}\n"
-              f"Company: {company_name} | Date: {m_start}")
+              f"Company: {company_name} | Date: {m_start}"
+              + (f"\nTranscript: {transcript_link}" if transcript_link else ""))
     time.sleep(2)
 
     # Write WCS record after audit so grade is available
@@ -1316,7 +1320,7 @@ def summarize_match(r, person_name, hs_key, gemini_key,
             "next_steps":            extracted.get("next_steps"),
             "meeting_summary":       hs_summary[:2000] if ok_hs else None,
             "audit_grade":           grade,
-            "audit_details":         mgmt_summary[:5000] if ok_audit else None,
+            "audit_details":         ((f"Transcript: {transcript_link}\n\n" if transcript_link else "") + mgmt_summary)[:5000] if ok_audit else None,
             "wordly_meeting_id":     m_hs_id or "",
             "wordly_transcript_id":  t_id,
         }
