@@ -1,0 +1,6 @@
+# Written by: Claude. Origin: Claude chat, project "Transcripts to HubSpot". Date written: 2026-11-05.
+# Keeps the build upload complete. Without this file, gcloud falls back to .gitignore,
+# which may silently leave out the Dockerfile or requirements.txt.
+.git
+__pycache__/
+*.pyc

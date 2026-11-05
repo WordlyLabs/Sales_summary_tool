@@ -1,0 +1,6 @@
+# Written by: Claude. Origin: Claude chat, project "Transcripts to HubSpot". Date written: 2026-11-05.
+# Pinned versions, each tested on Python 3.12. They all need Python 3.10 or newer, and the image uses 3.11.
+requests==2.34.2
+google-auth==2.62.1
+google-cloud-bigquery==3.47.0
+google-cloud-secret-manager==2.32.0
